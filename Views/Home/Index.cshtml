@@ -1,0 +1,99 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+  <h1 class="display-4">Employees</h1>
+
+  @section scripts
+        {
+    <script type="text/javascript" src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" />
+
+    <script>
+      $(document).ready(
+        function ()
+      {
+        $.ajax(
+          {
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json;charset=utf-8',
+            headers: { 'x-Username': 'sangu', 'x-Token': 'c2FuZ3U=' },
+            url: 'https://test-erms.azurewebsites.net/api/hol/get',
+            success: function (data)
+            {
+              var rows = '';
+              $.each(data, function (index, item)
+              {   
+                rows += '<tr id="student' + item.StudentId+'">';
+                rows += "<td>" + item.StudentId + "</td>";
+                rows += "<td>" + item.FirstName + "</td>";
+                rows += "<td>" + item.LastName + "</td>";
+                rows += "<td>" + item.Email + "</td>";
+                rows += '<td><button onclick="deleteStudent(' + item.StudentId+')"> delete</button></td>';
+                rows += "</tr>";
+              });
+              $('.InfoTBody').html(rows);
+              $('#TblInfo').DataTable();
+
+              
+            },
+            error: function (xhrequest, error, thrownError)
+            {
+              console.log('Error while ajax call: ' + error)
+            }
+
+          }
+        );
+        });
+
+      function deleteStudent(id)
+      {
+        $.ajax(
+          {
+            type: 'DELETE',
+            dataType: 'json',
+            contentType: 'application/json;charset=utf-8',
+            headers: { 'x-Username': 'sangu', 'x-Token': 'c2FuZ3U=' },
+            url: 'https://test-erms.azurewebsites.net/api/hol/delete/' + id,
+            success: function (data)
+            {
+              $("#student"+id).remove();
+
+            },
+            error: function (xhrequest, error, thrownError)
+            {
+              console.log('Error while ajax call: ' + error)
+            }
+
+          }
+        );
+      }
+
+    </script>
+
+  }
+  <style>
+    table, tr, td, th {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      margin: 10px;
+    }
+  </style>
+ <br />
+  <table id="TblInfo" class="table table-bordered table-striped mt-4">
+    <thead>
+      <tr class="bg-primary text-light">
+        <td>Student</td>
+        <td>FirstName</td>
+        <td>LastName</td>
+        <td>Email</td>
+        <td>Actions</td>
+      </tr>
+    </thead>
+    <tbody class="InfoTBody">
+    </tbody>
+  </table>
+</div>
